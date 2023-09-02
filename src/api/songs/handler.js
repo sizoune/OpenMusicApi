@@ -13,13 +13,13 @@ class SongHandler {
   async postSongHandler(request, h) {
     this._validator.validateSongPayload(request.payload);
     const {
-      title, year, genre, performer, duration, albumID,
+      title, year, genre, performer, duration, albumId,
     } = request.payload;
 
     // console.log(name, year);
 
     const songId = await this._service.addSong({
-      title, year, genre, performer, duration, albumID,
+      title, year, genre, performer, duration, albumId,
     });
 
     const response = h.response({
@@ -34,8 +34,46 @@ class SongHandler {
     return response;
   }
 
-  async getSongsHandler() {
-    const songs = await this._service.getSongs();
+  async getSongsHandler(request) {
+    // console.log(request.query.title);
+    let songs;
+    if (request.query.title && request.query.performer) {
+      songs = await this._service.getSongByTitleAndPerformer(
+        request.query.title,
+        request.query.performer,
+      );
+    } else if (request.query.title) {
+      songs = await this._service.getSongByTitle(
+        request.query.title,
+      );
+    } else if (request.query.performer) {
+      songs = await this._service.getSongByPerformer(
+        request.query.performer,
+      );
+    } else {
+      songs = await this._service.getSongs();
+    }
+
+    return {
+      status: 'success',
+      data: {
+        songs,
+      },
+    };
+  }
+
+  async getSongsByTitleHandler(request) {
+    const songs = await this._service.getSongByTitle(request.query.title);
+    return {
+      status: 'success',
+      data: {
+        songs,
+      },
+    };
+  }
+
+  async getSongsByPerformerHandler(request) {
+    const songs = await this._service.getSongByPerformer(request.query.performer);
     return {
       status: 'success',
       data: {
