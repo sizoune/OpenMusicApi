@@ -11,9 +11,9 @@ class PlaylistsHandler {
   async postPlaylistHandler(request, h) {
     this._validator.validatePlaylistPayload(request.payload);
     const { name } = request.payload;
-    const { id: credentialId } = request.auth.credentials;
-
-    const playlistId = await this._service.addPlaylist({ name, credentialId });
+    const { id: owner } = request.auth.credentials;
+    console.log(name, owner);
+    const playlistId = await this._service.addPlaylist({ name, owner });
 
     const response = h.response({
       status: 'success',
@@ -46,7 +46,7 @@ class PlaylistsHandler {
 
     return {
       status: 'success',
-      message: 'Catatan berhasil dihapus',
+      message: 'Playlist berhasil dihapus',
     };
   }
 }

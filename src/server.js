@@ -35,7 +35,7 @@ const PlaylistsValidator = require('./validator/playlists');
 // playlist_songs
 const playlistSongs = require('./api/playlist_songs');
 const PlaylistSongsService = require('./services/PlaylistSongsServices');
-const PlaylistSongsValidator = require('./validator/playlists_song');
+const PlaylistSongsValidator = require('./validator/playlistsongs');
 
 const init = async () => {
   const albumsService = new AlbumService();
@@ -122,9 +122,9 @@ const init = async () => {
       plugin: playlistSongs,
       options: {
         service: playlistSongsService,
+        validator: PlaylistSongsValidator,
         playlistsService,
         songsService,
-        validator: PlaylistSongsValidator,
       },
     },
   ]);

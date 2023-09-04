@@ -29,7 +29,7 @@ class PlaylistSongServices {
 
   async deletePlaylistSongById(playlistId, songId) {
     const query = {
-      text: 'DELETE FROM playlists_songs WHERE playlistId = $1 AND song_id = $2 RETURNING id',
+      text: 'DELETE FROM playlists_songs WHERE playlist_Id = $1 AND song_id = $2 RETURNING id',
       values: [playlistId, songId],
     };
 

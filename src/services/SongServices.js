@@ -106,6 +106,16 @@ class SongServices {
     return result.rows.map(mapSongDBToDetailModel);
   }
 
+  async getSongsByPlaylistId(id) {
+    const result = await this._pool.query({
+      text: `SELECT songs.song_id, songs.title, songs.performer FROM songs 
+                LEFT JOIN playlists_songs ON playlists_songs.song_id = songs.song_id 
+                WHERE playlists_songs.playlist_id = $1`,
+      values: [id],
+    });
+    return result.rows.map(mapSongDBToListModel);
+  }
+
   async editSongById(songID, {
     title, year, genre, performer, duration, albumID,
   }) {
@@ -133,16 +143,6 @@ class SongServices {
     if (!result.rows.length) {
       throw new NotFoundError('Lagu gagal dihapus. Id tidak ditemukan');
     }
-  }
-
-  async getSongsByPlaylistId(id) {
-    const result = await this._pool.query({
-      text: `SELECT songs.id, songs.title, songs.performer FROM songs 
-                LEFT JOIN playlistsongs ON playlistsongs.song_id = songs.id 
-                WHERE playlistsongs.playlist_id = $1`,
-      values: [id],
-    });
-    return result.rows;
   }
 }
 
