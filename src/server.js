@@ -27,11 +27,23 @@ const AuthenticationsService = require('./services/AuthenticationsService');
 const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
+// playlists
+const playlists = require('./api/playlists');
+const PlaylistsService = require('./services/PlaylistServices');
+const PlaylistsValidator = require('./validator/playlists');
+
+// playlist_songs
+const playlistSongs = require('./api/playlist_songs');
+const PlaylistSongsService = require('./services/PlaylistSongsServices');
+const PlaylistSongsValidator = require('./validator/playlists_song');
+
 const init = async () => {
   const albumsService = new AlbumService();
   const songsService = new SongService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
+  const playlistsService = new PlaylistsService();
+  const playlistSongsService = new PlaylistSongsService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -99,36 +111,48 @@ const init = async () => {
         validator: AuthenticationsValidator,
       },
     },
+    {
+      plugin: playlists,
+      options: {
+        service: playlistsService,
+        validator: PlaylistsValidator,
+      },
+    },
+    {
+      plugin: playlistSongs,
+      options: {
+        service: playlistSongsService,
+        playlistsService,
+        songsService,
+        validator: PlaylistSongsValidator,
+      },
+    },
   ]);
 
   server.ext('onPreResponse', (request, h) => {
     // mendapatkan konteks response dari request
     const { response } = request;
-    console.log(response);
-    if (response instanceof Error) {
-      // penanganan client error secara internal.
-      if (response instanceof ClientError) {
-        const newResponse = h.response({
-          status: 'fail',
-          message: response.message,
-        });
-        newResponse.code(response.statusCode);
-        return newResponse;
+    if (response instanceof ClientError) {
+      const newResponse = h.response({
+        status: 'fail',
+        message: response.message,
+      });
+      newResponse.code(response.statusCode);
+      return newResponse;
+    } if (response instanceof Error) {
+      const { statusCode, payload } = response.output;
+      if (statusCode === 401) {
+        return h.response(payload).code(401);
       }
-      // mempertahankan penanganan client error oleh hapi secara native, seperti 404, etc.
-      if (!response.isServer) {
-        return h.continue;
-      }
-      // penanganan server error sesuai kebutuhan
       const newResponse = h.response({
         status: 'error',
-        message: 'terjadi kegagalan pada server kami',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
       });
+      console.log(response);
       newResponse.code(500);
       return newResponse;
     }
-    // jika bukan error, lanjutkan dengan response sebelumnya (tanpa terintervensi)
-    return h.continue;
+    return response.continue || response;
   });
 
   await server.start();
