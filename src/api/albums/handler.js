@@ -31,7 +31,7 @@ class AlbumHandler {
     return response;
   }
 
-  async getAlbumByIdHandler(request, h) {
+  async getAlbumByIdHandler(request) {
     const { albumID } = request.params;
     const album = await this._albumService.getAlbumById(albumID);
     const songs = await this._songService.getSongByAlbumId(albumID);
@@ -47,7 +47,7 @@ class AlbumHandler {
     };
   }
 
-  async putAlbumByIdHandler(request, h) {
+  async putAlbumByIdHandler(request) {
     this._validator.validateAlbumPayload(request.payload);
     const { albumID } = request.params;
 
@@ -59,7 +59,7 @@ class AlbumHandler {
     };
   }
 
-  async deleteNoteByIdHandler(request, h) {
+  async deleteNoteByIdHandler(request) {
     const { albumID } = request.params;
     await this._albumService.deleteAlbumById(albumID);
 

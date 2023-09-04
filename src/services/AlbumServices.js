@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../exceptions/InvariantError');
@@ -11,7 +10,7 @@ class AlbumServices {
   }
 
   async addAlbum({ name, year }) {
-    const albumID = nanoid(16);
+    const albumID = `album-${nanoid(16)}`;
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
 

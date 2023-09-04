@@ -1,9 +1,8 @@
-/* eslint-disable no-underscore-dangle */
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
-const { mapAlbumDBToModel, mapSongDBToListModel, mapSongDBToDetailModel } = require('../utils');
+const { mapSongDBToListModel, mapSongDBToDetailModel } = require('../utils');
 
 class SongServices {
   constructor() {
@@ -13,7 +12,7 @@ class SongServices {
   async addSong({
     title, year, genre, performer, duration, albumId,
   }) {
-    const songID = nanoid(16);
+    const songID = `song-${nanoid(16)}`;
     const createdAt = new Date().toISOString();
     const updatedAt = createdAt;
 

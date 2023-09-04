@@ -82,7 +82,7 @@ class SongHandler {
     };
   }
 
-  async getSongByIdHandler(request, h) {
+  async getSongByIdHandler(request) {
     const { songID } = request.params;
     const song = await this._service.getSongById(songID);
     return {
@@ -93,7 +93,7 @@ class SongHandler {
     };
   }
 
-  async putSongByIdHandler(request, h) {
+  async putSongByIdHandler(request) {
     this._validator.validateSongPayload(request.payload);
     const { songID } = request.params;
 
@@ -105,7 +105,7 @@ class SongHandler {
     };
   }
 
-  async deleteSongByIdHandler(request, h) {
+  async deleteSongByIdHandler(request) {
     const { songID } = request.params;
     await this._service.deleteSongById(songID);
 
