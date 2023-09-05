@@ -37,13 +37,24 @@ const playlistSongs = require('./api/playlist_songs');
 const PlaylistSongsService = require('./services/PlaylistSongsServices');
 const PlaylistSongsValidator = require('./validator/playlistsongs');
 
+// collaborations
+const collaborations = require('./api/collaborations');
+const CollaborationsService = require('./services/CollaborationService');
+const CollaborationsValidator = require('./validator/collaborations');
+
+// playlist activities
+const playlist_activities = require('./api/playlisthistory');
+const PlaylistHistoryService = require('./services/PlaylistHistoryService');
+
 const init = async () => {
   const albumsService = new AlbumService();
   const songsService = new SongService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
-  const playlistsService = new PlaylistsService();
+  const collaborationsService = new CollaborationsService();
+  const playlistsService = new PlaylistsService(collaborationsService);
   const playlistSongsService = new PlaylistSongsService();
+  const playlistHistoryService = new PlaylistHistoryService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -125,6 +136,23 @@ const init = async () => {
         validator: PlaylistSongsValidator,
         playlistsService,
         songsService,
+        playlistHistoryService,
+      },
+    },
+    {
+      plugin: collaborations,
+      options: {
+        collaborationsService,
+        playlistService: playlistsService,
+        userService: usersService,
+        validator: CollaborationsValidator,
+      },
+    },
+    {
+      plugin: playlist_activities,
+      options: {
+        service: playlistHistoryService,
+        playlistService: playlistsService,
       },
     },
   ]);
