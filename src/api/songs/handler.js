@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 const autoBind = require('auto-bind');
 
 class SongHandler {
@@ -6,7 +5,6 @@ class SongHandler {
     this._service = service;
     this._validator = validator;
 
-    // this.postAlbumHandler = this.postAlbumHandler.bind(this);
     autoBind(this);
   }
 

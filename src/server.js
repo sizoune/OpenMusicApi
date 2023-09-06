@@ -8,43 +8,48 @@ const ClientError = require('./exceptions/ClientError');
 
 // albums
 const albums = require('./api/albums');
-const AlbumService = require('./services/AlbumServices');
+const AlbumService = require('./services/app_services/AlbumServices');
 const AlbumsValidator = require('./validator/albums');
 
 // songs
 const songs = require('./api/songs');
-const SongService = require('./services/SongServices');
+const SongService = require('./services/app_services/SongServices');
 const SongsValidator = require('./validator/songs');
 
 // users
 const users = require('./api/users');
-const UsersService = require('./services/UsersServices');
+const UsersService = require('./services/app_services/UsersServices');
 const UsersValidator = require('./validator/users');
 
 // authentications
 const authentications = require('./api/authentications');
-const AuthenticationsService = require('./services/AuthenticationsService');
+const AuthenticationsService = require('./services/app_services/AuthenticationsService');
 const TokenManager = require('./tokenize/TokenManager');
 const AuthenticationsValidator = require('./validator/authentications');
 
 // playlists
 const playlists = require('./api/playlists');
-const PlaylistsService = require('./services/PlaylistServices');
+const PlaylistsService = require('./services/app_services/PlaylistServices');
 const PlaylistsValidator = require('./validator/playlists');
 
 // playlist_songs
 const playlistSongs = require('./api/playlist_songs');
-const PlaylistSongsService = require('./services/PlaylistSongsServices');
+const PlaylistSongsService = require('./services/app_services/PlaylistSongsServices');
 const PlaylistSongsValidator = require('./validator/playlistsongs');
 
 // collaborations
 const collaborations = require('./api/collaborations');
-const CollaborationsService = require('./services/CollaborationService');
+const CollaborationsService = require('./services/app_services/CollaborationService');
 const CollaborationsValidator = require('./validator/collaborations');
 
 // playlist activities
 const playlist_activities = require('./api/playlisthistory');
-const PlaylistHistoryService = require('./services/PlaylistHistoryService');
+const PlaylistHistoryService = require('./services/app_services/PlaylistHistoryService');
+
+// Exports
+const playlistExport = require('./api/exports');
+const ProducerService = require('./services/rabbitmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
 
 const init = async () => {
   const albumsService = new AlbumService();
@@ -153,6 +158,13 @@ const init = async () => {
       options: {
         service: playlistHistoryService,
         playlistService: playlistsService,
+      },
+    },
+    {
+      plugin: playlistExport,
+      options: {
+        service: ProducerService,
+        validator: ExportsValidator,
       },
     },
   ]);
