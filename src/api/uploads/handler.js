@@ -1,4 +1,5 @@
 const autoBind = require('auto-bind');
+const config = require('../../utils/config');
 
 class UploadsHandler {
   constructor(service, albumService, validator) {
@@ -15,7 +16,7 @@ class UploadsHandler {
     this._validator.validateImageHeaders(cover.hapi.headers);
 
     const filename = await this._service.writeFile(cover, cover.hapi);
-    const coverUrl = `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`;
+    const coverUrl = `http://${config.app.host}:${config.app.port}/upload/images/${filename}`;
 
     // cek apakah id album ada
     await this._albumService.getAlbumById(albumId);

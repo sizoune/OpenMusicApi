@@ -58,7 +58,15 @@ const uploads = require('./api/uploads');
 const StorageService = require('./services/storage/StorageService');
 const UploadsValidator = require('./validator/uploads');
 
+// Album Likes
+const albumLikes = require('./api/album_likes');
+const AlbumLikesService = require('./services/app_services/AlbumLikesServices');
+
+// redis
+const CacheService = require('./services/redis/CacheServices');
+
 const init = async () => {
+  const cacheService = new CacheService();
   const albumsService = new AlbumService();
   const songsService = new SongService();
   const usersService = new UsersService();
@@ -67,6 +75,7 @@ const init = async () => {
   const playlistsService = new PlaylistsService(collaborationsService);
   const playlistSongsService = new PlaylistSongsService();
   const playlistHistoryService = new PlaylistHistoryService();
+  const albumLikesService = new AlbumLikesService(albumsService, cacheService);
   const storageService = new StorageService(
     path.resolve(__dirname, 'api/uploads/file/images'),
   );
@@ -187,6 +196,12 @@ const init = async () => {
         service: storageService,
         albumService: albumsService,
         validator: UploadsValidator,
+      },
+    },
+    {
+      plugin: albumLikes,
+      options: {
+        service: albumLikesService,
       },
     },
   ]);
